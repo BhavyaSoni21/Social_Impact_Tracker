@@ -1,8 +1,3 @@
-"""
-Quick Start Script for Social Impact Tracker
-Run this script to quickly start both backend API and frontend dashboard
-"""
-
 import subprocess
 import sys
 import time
@@ -10,14 +5,12 @@ import webbrowser
 from pathlib import Path
 
 def print_banner():
-    """Print welcome banner"""
     print("=" * 60)
     print("   SOCIAL IMPACT TRACKER - Quick Start")
     print("=" * 60)
     print()
 
 def check_requirements():
-    """Check if requirements are installed"""
     try:
         import fastapi
         import streamlit
@@ -31,7 +24,6 @@ def check_requirements():
         return False
 
 def start_backend():
-    """Start the FastAPI backend"""
     print("\n📡 Starting Backend API...")
     print("   URL: http://localhost:8000")
     print("   Docs: http://localhost:8000/docs")
@@ -42,11 +34,10 @@ def start_backend():
         stderr=subprocess.PIPE
     )
     
-    time.sleep(2)  # Wait for backend to start
+    time.sleep(2)
     return backend_process
 
 def start_frontend():
-    """Start the Streamlit frontend"""
     print("\n🎨 Starting Frontend Dashboard...")
     print("   URL: http://localhost:8501")
     
@@ -56,7 +47,7 @@ def start_frontend():
         stderr=subprocess.PIPE
     )
     
-    time.sleep(2)  # Wait for frontend to start
+    time.sleep(2)
     
     # Open browser
     webbrowser.open("http://localhost:8501")
@@ -64,18 +55,14 @@ def start_frontend():
     return frontend_process
 
 def main():
-    """Main execution"""
     print_banner()
     
-    # Check requirements
     if not check_requirements():
         sys.exit(1)
     
     try:
-        # Start backend
         backend = start_backend()
         
-        # Start frontend
         frontend = start_frontend()
         
         print("\n" + "=" * 60)
@@ -84,7 +71,6 @@ def main():
         print("\nPress Ctrl+C to stop both services")
         print()
         
-        # Keep running
         while True:
             time.sleep(1)
             

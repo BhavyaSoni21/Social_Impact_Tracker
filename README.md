@@ -10,9 +10,9 @@ This lightweight, scalable solution is specifically designed for small to medium
 
 ---
 
-## 🎯 Key Features
+## Key Features
 
-### 📊 Program Data Management
+### Program Data Management
 
 Comprehensive program record management with structured data entry:
 
@@ -25,7 +25,7 @@ Comprehensive program record management with structured data entry:
 
 All data is stored in a relational database with full CRUD operations.
 
-### 🗜️ Basic Data Compression Layer
+### Basic Data Compression Layer
 
 Optimized data storage to reduce redundancy and improve efficiency:
 
@@ -34,7 +34,7 @@ Optimized data storage to reduce redundancy and improve efficiency:
 - **Automated Compression** - Applied transparently during data storage
 - **Reduced Storage Footprint** - Minimizes database size without loss of information
 
-### 📈 Impact Metrics Engine
+### Impact Metrics Engine
 
 Automatic computation of key performance indicators:
 
@@ -47,7 +47,7 @@ Automatic computation of key performance indicators:
 
 All metrics are calculated automatically upon data entry and updated in real-time.
 
-### 📉 Interactive Dashboard
+### Interactive Dashboard
 
 Professional data visualization for quick insights:
 
@@ -63,7 +63,7 @@ Professional data visualization for quick insights:
 
 - **Real-Time Updates** - Dashboard refreshes automatically with new data
 
-### 🔌 API-Based Data Flow
+### API-Based Data Flow
 
 RESTful API architecture for flexible integration:
 
@@ -75,7 +75,7 @@ RESTful API architecture for flexible integration:
 
 Clean separation between frontend and backend enables future integrations.
 
-### ✅ Data Validation
+### Data Validation
 
 Robust validation ensures data integrity:
 
@@ -87,7 +87,7 @@ Robust validation ensures data integrity:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Component | Technology | Purpose |
 |-----------|-----------|---------|
@@ -101,41 +101,41 @@ Robust validation ensures data integrity:
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 The system follows a modular, layered architecture:
 
 ```
 ┌─────────────────────────────────────────┐
-│     Streamlit Frontend (Dashboard)       │
-│   - User Interface                       │
-│   - Data Visualization                   │
-│   - Interactive Charts                   │
+│     Streamlit Frontend (Dashboard)      │
+│   - User Interface                      │
+│   - Data Visualization                  │
+│   - Interactive Charts                  │
 └─────────────────┬───────────────────────┘
                   │
                   │ REST API Calls
                   │
 ┌─────────────────▼───────────────────────┐
-│         FastAPI Backend                  │
-│   - API Endpoints                        │
-│   - Business Logic                       │
-│   - Data Validation                      │
+│         FastAPI Backend                 │
+│   - API Endpoints                       │
+│   - Business Logic                      │
+│   - Data Validation                     │
 └─────────────────┬───────────────────────┘
                   │
                   │
 ┌─────────────────▼───────────────────────┐
-│  Compression & Analytics Engine          │
-│   - Dictionary Encoding                  │
-│   - Delta Encoding                       │
-│   - Metrics Calculation                  │
+│  Compression & Analytics Engine         │
+│   - Dictionary Encoding                 │
+│   - Delta Encoding                      │
+│   - Metrics Calculation                 │
 └─────────────────┬───────────────────────┘
                   │
                   │
 ┌─────────────────▼───────────────────────┐
-│       SQLite Database                    │
-│   - Program Records                      │
-│   - Compressed Data                      │
-│   - Computed Metrics                     │
+│       SQLite Database                   │
+│   - Program Records                     │
+│   - Compressed Data                     │
+│   - Computed Metrics                    │
 └─────────────────────────────────────────┘
 ```
 
@@ -148,7 +148,7 @@ The system follows a modular, layered architecture:
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.9 or higher
 - pip (Python package manager)
@@ -156,7 +156,7 @@ The system follows a modular, layered architecture:
 
 ---
 
-## 🚀 Installation
+## Installation
 
 1. **Clone the repository**
    ```bash
@@ -186,7 +186,7 @@ The system follows a modular, layered architecture:
 
 ---
 
-## 💻 Usage
+## Usage
 
 ### Starting the Backend API
 
@@ -210,7 +210,7 @@ The dashboard will open automatically in your browser at `http://localhost:8501`
 
 ---
 
-## 📖 User Guide
+## User Guide
 
 ### Adding a New Program
 
@@ -240,7 +240,7 @@ The dashboard will open automatically in your browser at `http://localhost:8501`
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 Social_Impact_Tracker/
@@ -264,7 +264,7 @@ Social_Impact_Tracker/
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 Database and application settings can be configured in `backend/config.py`:
 
@@ -275,7 +275,7 @@ Database and application settings can be configured in `backend/config.py`:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 Run the test suite:
 
@@ -291,7 +291,7 @@ pytest --cov=backend --cov=frontend tests/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow these steps:
 
@@ -303,13 +303,13 @@ Contributions are welcome! Please follow these steps:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Built to support nonprofit organizations in their mission to create positive social change
 - Designed with input from nonprofit program managers and data analysts
@@ -317,7 +317,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 📞 Support
+## Support
 
 For questions, issues, or feature requests:
 
@@ -327,7 +327,7 @@ For questions, issues, or feature requests:
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 Future enhancements under consideration:
 
@@ -341,4 +341,4 @@ Future enhancements under consideration:
 
 ---
 
-**Made with ❤️ to empower nonprofits through data-driven insights**
+**Made to empower nonprofits through data-driven insights**

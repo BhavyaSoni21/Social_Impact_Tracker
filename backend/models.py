@@ -1,8 +1,3 @@
-"""
-Data Models for Social Impact Tracker
-Defines Pydantic models for API validation and SQLAlchemy models for database
-"""
-
 from pydantic import BaseModel, Field, validator
 from sqlalchemy import Column, Integer, String, Float, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -12,9 +7,7 @@ from typing import Optional
 Base = declarative_base()
 
 
-# SQLAlchemy Database Models
 class ProgramDB(Base):
-    """Database model for storing program data"""
     __tablename__ = "programs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -26,14 +19,11 @@ class ProgramDB(Base):
     post_outcome_score = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     
-    # Compressed data fields
     compressed_name = Column(String, nullable=True)
     delta_beneficiaries = Column(Integer, nullable=True)
 
 
-# Pydantic Models for API
 class ProgramBase(BaseModel):
-    """Base model for program data validation"""
     program_name: str = Field(..., min_length=1, max_length=200, description="Name of the program")
     time_period: str = Field(..., min_length=1, description="Time period of program operation")
     beneficiaries: int = Field(..., gt=0, description="Number of beneficiaries served")
@@ -43,10 +33,8 @@ class ProgramBase(BaseModel):
 
     @validator('post_outcome_score')
     def validate_outcome_scores(cls, v, values):
-        """Ensure post-outcome is not less than pre-outcome when improvement is expected"""
         if 'pre_outcome_score' in values:
             pre_score = values['pre_outcome_score']
-            # Allow flexibility but warn if post is significantly lower
             if v < pre_score - 10:
                 raise ValueError(f"Post-outcome score ({v}) is significantly lower than pre-outcome score ({pre_score})")
         return v
@@ -65,12 +53,10 @@ class ProgramBase(BaseModel):
 
 
 class ProgramCreate(ProgramBase):
-    """Model for creating a new program"""
     pass
 
 
 class ProgramResponse(ProgramBase):
-    """Model for program response with ID"""
     id: int
     created_at: datetime
 
@@ -79,7 +65,6 @@ class ProgramResponse(ProgramBase):
 
 
 class ImpactMetrics(BaseModel):
-    """Model for computed impact metrics"""
     program_id: int
     program_name: str
     outcome_improvement: float = Field(..., description="Difference between post and pre outcome scores")
@@ -101,7 +86,6 @@ class ImpactMetrics(BaseModel):
 
 
 class AnalyticsSummary(BaseModel):
-    """Model for dashboard analytics summary"""
     total_programs: int
     total_beneficiaries: int
     average_impact_score: float
@@ -110,7 +94,6 @@ class AnalyticsSummary(BaseModel):
 
 
 class ProgramTrend(BaseModel):
-    """Model for program trend data"""
     time_period: str
     beneficiaries: int
     cost: float

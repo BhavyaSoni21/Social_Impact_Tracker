@@ -1,8 +1,3 @@
-"""
-FastAPI Main Application for Social Impact Tracker
-Provides REST API endpoints for program data management and analytics
-"""
-
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
@@ -21,14 +16,12 @@ from backend.config import (
     CORS_ORIGINS, COMPRESSION_ENABLED
 )
 
-# Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
@@ -37,7 +30,6 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=CORS_ORIGINS,
@@ -49,7 +41,6 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize database on startup"""
     logger.info("Starting Social Impact Tracker API...")
     init_database()
     logger.info("Database initialized successfully")
@@ -57,7 +48,6 @@ async def startup_event():
 
 @app.get("/", tags=["Root"])
 def root():
-    """Root endpoint - API information"""
     return {
         "name": APP_NAME,
         "version": APP_VERSION,
@@ -69,7 +59,6 @@ def root():
 
 @app.get("/health", tags=["Health"])
 def health_check():
-    """Health check endpoint"""
     db_stats = get_database_stats()
     compression_stats = get_compression_efficiency()
     
@@ -82,18 +71,7 @@ def health_check():
 
 @app.post("/programs", response_model=ProgramResponse, status_code=status.HTTP_201_CREATED, tags=["Programs"])
 def create_program(program: ProgramCreate, db: Session = Depends(get_db)):
-    """
-    Create a new program record
-    
-    - **program_name**: Name of the program
-    - **time_period**: Time period of operation (e.g., "2025-Q1")
-    - **beneficiaries**: Number of people served
-    - **cost**: Total program cost
-    - **pre_outcome_score**: Baseline outcome score (0-100)
-    - **post_outcome_score**: Final outcome score (0-100)
-    """
     try:
-        # Apply compression if enabled
         compressed_name = program.program_name
         delta_beneficiaries = None
         
@@ -103,7 +81,6 @@ def create_program(program: ProgramCreate, db: Session = Depends(get_db)):
                 program.beneficiaries
             )
         
-        # Create database record
         db_program = ProgramDB(
             program_name=program.program_name,
             time_period=program.time_period,
@@ -133,12 +110,6 @@ def create_program(program: ProgramCreate, db: Session = Depends(get_db)):
 
 @app.get("/programs", response_model=List[ProgramResponse], tags=["Programs"])
 def get_programs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    """
-    Retrieve all programs with pagination
-    
-    - **skip**: Number of records to skip (default: 0)
-    - **limit**: Maximum number of records to return (default: 100)
-    """
     programs = db.query(ProgramDB).offset(skip).limit(limit).all()
     logger.info(f"Retrieved {len(programs)} programs")
     return programs
@@ -146,11 +117,6 @@ def get_programs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db))
 
 @app.get("/programs/{program_id}", response_model=ProgramResponse, tags=["Programs"])
 def get_program(program_id: int, db: Session = Depends(get_db)):
-    """
-    Retrieve a specific program by ID
-    
-    - **program_id**: Unique program identifier
-    """
     program = db.query(ProgramDB).filter(ProgramDB.id == program_id).first()
     
     if not program:
@@ -165,16 +131,7 @@ def get_program(program_id: int, db: Session = Depends(get_db)):
 
 @app.put("/programs/{program_id}", response_model=ProgramResponse, tags=["Programs"])
 def update_program(program_id: int, program: ProgramCreate, db: Session = Depends(get_db)):
-    """
-    Update an existing program by ID
-    
-    - **program_id**: Unique program identifier
-    - **program**: Updated program data
-    
-    All fields must be provided (full update)
-    """
     try:
-        # Find existing program
         db_program = db.query(ProgramDB).filter(ProgramDB.id == program_id).first()
         
         if not db_program:
@@ -184,7 +141,6 @@ def update_program(program_id: int, program: ProgramCreate, db: Session = Depend
                 detail=f"Program with ID {program_id} not found"
             )
         
-        # Apply compression if enabled and program name changed
         compressed_name = program.program_name
         delta_beneficiaries = None
         
@@ -194,7 +150,6 @@ def update_program(program_id: int, program: ProgramCreate, db: Session = Depend
                 program.beneficiaries
             )
         
-        # Update all fields
         db_program.program_name = program.program_name
         db_program.time_period = program.time_period
         db_program.beneficiaries = program.beneficiaries
@@ -223,11 +178,6 @@ def update_program(program_id: int, program: ProgramCreate, db: Session = Depend
 
 @app.delete("/programs/{program_id}", status_code=status.HTTP_204_NO_CONTENT, tags=["Programs"])
 def delete_program(program_id: int, db: Session = Depends(get_db)):
-    """
-    Delete a program by ID
-    
-    - **program_id**: Unique program identifier
-    """
     program = db.query(ProgramDB).filter(ProgramDB.id == program_id).first()
     
     if not program:
@@ -244,17 +194,6 @@ def delete_program(program_id: int, db: Session = Depends(get_db)):
 
 @app.get("/metrics/{program_id}", response_model=ImpactMetrics, tags=["Metrics"])
 def get_program_metrics(program_id: int, db: Session = Depends(get_db)):
-    """
-    Calculate and retrieve impact metrics for a specific program
-    
-    - **program_id**: Unique program identifier
-    
-    Returns computed metrics including:
-    - Outcome Improvement
-    - Cost per Beneficiary
-    - Growth Rate
-    - Composite Impact Score
-    """
     metrics = AnalyticsEngine.get_program_by_id_with_metrics(db, program_id)
     
     if not metrics:
@@ -269,16 +208,6 @@ def get_program_metrics(program_id: int, db: Session = Depends(get_db)):
 
 @app.get("/analytics/summary", response_model=AnalyticsSummary, tags=["Analytics"])
 def get_analytics_summary(db: Session = Depends(get_db)):
-    """
-    Get summary analytics for dashboard
-    
-    Returns aggregated metrics including:
-    - Total programs
-    - Total beneficiaries
-    - Average impact score
-    - Total cost
-    - Average outcome improvement
-    """
     summary = AnalyticsEngine.get_analytics_summary(db)
     logger.info("Generated analytics summary")
     return summary
@@ -286,11 +215,6 @@ def get_analytics_summary(db: Session = Depends(get_db)):
 
 @app.get("/analytics/ranked", response_model=List[ImpactMetrics], tags=["Analytics"])
 def get_ranked_programs(limit: int = 10, db: Session = Depends(get_db)):
-    """
-    Get programs ranked by composite impact score
-    
-    - **limit**: Maximum number of programs to return (default: 10)
-    """
     ranked = AnalyticsEngine.get_ranked_programs(db, limit)
     logger.info(f"Retrieved top {len(ranked)} ranked programs")
     return ranked
@@ -298,14 +222,6 @@ def get_ranked_programs(limit: int = 10, db: Session = Depends(get_db)):
 
 @app.get("/analytics/trends", tags=["Analytics"])
 def get_trends(db: Session = Depends(get_db)):
-    """
-    Get trend data for visualization
-    
-    Returns time-series data for:
-    - Beneficiary growth
-    - Cost trends
-    - Outcome improvements
-    """
     trends = AnalyticsEngine.get_program_trends(db)
     logger.info(f"Retrieved {len(trends)} trend data points")
     return trends
@@ -313,11 +229,6 @@ def get_trends(db: Session = Depends(get_db)):
 
 @app.get("/compression/stats", tags=["System"])
 def get_compression_stats():
-    """
-    Get compression efficiency statistics
-    
-    Returns metrics about data compression performance
-    """
     stats = get_compression_efficiency()
     return stats
 

@@ -1,8 +1,3 @@
-"""
-Streamlit Dashboard for Social Impact Tracker
-Interactive visualization and data entry interface
-"""
-
 import streamlit as st
 import requests
 import pandas as pd
@@ -12,12 +7,10 @@ from datetime import datetime
 import sys
 from pathlib import Path
 
-# Add backend to path for imports
 sys.path.append(str(Path(__file__).parent.parent))
 
 from frontend.utils import format_currency, format_number, format_percentage, get_api_url
 
-# Page configuration
 st.set_page_config(
     page_title="Social Impact Tracker",
     page_icon="📊",
@@ -25,7 +18,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
 st.markdown("""
     <style>
     .main-header {
@@ -58,12 +50,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# API base URL
 API_BASE_URL = get_api_url()
 
 
 def check_api_health():
-    """Check if API is running"""
     try:
         response = requests.get(f"{API_BASE_URL}/health", timeout=5)
         return response.status_code == 200
@@ -72,7 +62,6 @@ def check_api_health():
 
 
 def fetch_analytics_summary():
-    """Fetch summary analytics from API"""
     try:
         response = requests.get(f"{API_BASE_URL}/analytics/summary")
         response.raise_for_status()
@@ -83,7 +72,6 @@ def fetch_analytics_summary():
 
 
 def fetch_ranked_programs():
-    """Fetch ranked programs from API"""
     try:
         response = requests.get(f"{API_BASE_URL}/analytics/ranked?limit=20")
         response.raise_for_status()
@@ -94,7 +82,6 @@ def fetch_ranked_programs():
 
 
 def fetch_trends():
-    """Fetch trend data from API"""
     try:
         response = requests.get(f"{API_BASE_URL}/analytics/trends")
         response.raise_for_status()
@@ -105,7 +92,6 @@ def fetch_trends():
 
 
 def fetch_programs():
-    """Fetch all programs from API"""
     try:
         response = requests.get(f"{API_BASE_URL}/programs?limit=1000")
         response.raise_for_status()
@@ -116,7 +102,6 @@ def fetch_programs():
 
 
 def submit_program(program_data):
-    """Submit new program to API"""
     try:
         response = requests.post(f"{API_BASE_URL}/programs", json=program_data)
         response.raise_for_status()
@@ -129,19 +114,15 @@ def submit_program(program_data):
 
 
 def main():
-    """Main dashboard application"""
     
-    # Header
     st.markdown('<div class="main-header">📊 Social Impact Tracker</div>', unsafe_allow_html=True)
     st.markdown("---")
     
-    # Check API health
     if not check_api_health():
         st.error("⚠️ Cannot connect to API. Please ensure the backend is running on http://localhost:8000")
         st.info("Run: `uvicorn backend.main:app --reload`")
         return
     
-    # Sidebar navigation
     st.sidebar.title("Navigation")
     page = st.sidebar.radio("Go to", ["Dashboard", "Add Program", "View Programs", "Analytics"])
     
@@ -156,18 +137,15 @@ def main():
 
 
 def show_dashboard():
-    """Display main dashboard with summary metrics and charts"""
     
     st.header("📈 Dashboard Overview")
     
-    # Fetch data
     summary = fetch_analytics_summary()
     
     if not summary:
         st.warning("No data available. Add some programs to get started!")
         return
     
-    # Summary metrics
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
@@ -200,7 +178,6 @@ def show_dashboard():
     
     st.markdown("---")
     
-    # Charts
     col1, col2 = st.columns(2)
     
     with col1:
@@ -241,7 +218,6 @@ def show_dashboard():
             )
             st.plotly_chart(fig, use_container_width=True)
     
-    # Beneficiary growth trend
     st.subheader("📈 Beneficiary Growth Trend")
     trends = fetch_trends()
     if trends:
@@ -259,7 +235,6 @@ def show_dashboard():
 
 
 def show_add_program():
-    """Display form to add new program"""
     
     st.header("➕ Add New Program")
     
@@ -279,7 +254,6 @@ def show_add_program():
         submitted = st.form_submit_button("Submit Program", use_container_width=True)
         
         if submitted:
-            # Validate inputs
             if not program_name or not time_period:
                 st.error("Please fill in all required fields")
                 return
@@ -287,7 +261,6 @@ def show_add_program():
             if post_outcome < pre_outcome - 10:
                 st.warning("Post-outcome score is significantly lower than pre-outcome score. Are you sure?")
             
-            # Prepare data
             program_data = {
                 "program_name": program_name,
                 "time_period": time_period,
@@ -297,7 +270,6 @@ def show_add_program():
                 "post_outcome_score": post_outcome
             }
             
-            # Submit to API
             result, error = submit_program(program_data)
             
             if error:
@@ -306,13 +278,11 @@ def show_add_program():
                 st.success(f"✅ Program '{program_name}' added successfully!")
                 st.balloons()
                 
-                # Show computed metrics
                 if result:
                     st.info("Program created successfully. View it in the 'View Programs' or 'Dashboard' section.")
 
 
 def show_programs_list():
-    """Display list of all programs"""
     
     st.header("📋 All Programs")
     
@@ -322,14 +292,11 @@ def show_programs_list():
         st.info("No programs found. Add your first program to get started!")
         return
     
-    # Convert to DataFrame
     df = pd.DataFrame(programs)
     
-    # Add computed columns
     df['outcome_improvement'] = df['post_outcome_score'] - df['pre_outcome_score']
     df['cost_per_beneficiary'] = df['cost'] / df['beneficiaries']
     
-    # Format for display
     display_df = df[[
         'id', 'program_name', 'time_period', 'beneficiaries', 
         'cost', 'outcome_improvement', 'cost_per_beneficiary'
@@ -340,30 +307,25 @@ def show_programs_list():
         'Cost ($)', 'Outcome Improvement', 'Cost per Beneficiary ($)'
     ]
     
-    # Format numbers
     display_df['Cost ($)'] = display_df['Cost ($)'].apply(lambda x: f"${x:,.2f}")
     display_df['Cost per Beneficiary ($)'] = display_df['Cost per Beneficiary ($)'].apply(lambda x: f"${x:,.2f}")
     display_df['Outcome Improvement'] = display_df['Outcome Improvement'].apply(lambda x: f"{x:.1f}")
     
-    # Display with filtering
     st.dataframe(display_df, use_container_width=True, hide_index=True)
     
     st.info(f"📊 Total: {len(programs)} programs")
 
 
 def show_analytics():
-    """Display detailed analytics"""
     
     st.header("📊 Detailed Analytics")
     
-    # Ranked programs table
     st.subheader("🏆 Program Rankings by Impact Score")
     ranked = fetch_ranked_programs()
     
     if ranked:
         df_ranked = pd.DataFrame(ranked)
         
-        # Format for display
         display_ranked = df_ranked[[
             'program_name', 'outcome_improvement', 
             'cost_per_beneficiary', 'growth_rate', 'composite_impact_score'
@@ -385,7 +347,6 @@ def show_analytics():
     
     st.markdown("---")
     
-    # Distribution charts
     col1, col2 = st.columns(2)
     
     with col1:

@@ -1,37 +1,23 @@
-"""
-Utility functions for frontend
-"""
-
 import os
 
 
 def format_currency(amount: float) -> str:
-    """Format number as currency"""
     return f"${amount:,.2f}"
 
 
 def format_number(number: int) -> str:
-    """Format large numbers with commas"""
     return f"{number:,}"
 
 
 def format_percentage(value: float) -> str:
-    """Format decimal as percentage"""
     return f"{value * 100:+.1f}%"
 
 
 def get_api_url() -> str:
-    """Get API base URL from environment or use default"""
     return os.getenv("API_URL", "http://localhost:8000")
 
 
 def validate_program_data(data: dict) -> tuple[bool, str]:
-    """
-    Validate program data before submission
-    
-    Returns:
-        Tuple of (is_valid, error_message)
-    """
     required_fields = [
         'program_name', 'time_period', 'beneficiaries', 
         'cost', 'pre_outcome_score', 'post_outcome_score'
@@ -57,15 +43,6 @@ def validate_program_data(data: dict) -> tuple[bool, str]:
 
 
 def get_impact_color(score: float) -> str:
-    """
-    Get color code based on impact score
-    
-    Args:
-        score: Impact score (0-100)
-        
-    Returns:
-        Color code (red, yellow, or green)
-    """
     if score >= 75:
         return "green"
     elif score >= 50:
@@ -75,15 +52,6 @@ def get_impact_color(score: float) -> str:
 
 
 def get_impact_emoji(score: float) -> str:
-    """
-    Get emoji based on impact score
-    
-    Args:
-        score: Impact score (0-100)
-        
-    Returns:
-        Emoji string
-    """
     if score >= 80:
         return "🌟"
     elif score >= 60:
